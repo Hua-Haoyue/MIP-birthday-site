@@ -512,6 +512,187 @@ img { display: block; }
   z-index: 2;
 }
 
+/* 小丸子和小玉插图 */
+.bday-illu {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+.illu {
+  width: 118px;
+  height: 118px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35), 0 0 0 1px rgba(255, 233, 168, .35);
+  transition: transform .3s ease;
+}
+.illu-1 { transform: rotate(-5deg); }
+.illu-2 { transform: rotate(2deg); }
+.illu-3 { transform: rotate(5deg); }
+.illu:hover { transform: rotate(0deg) scale(1.06) translateY(-3px); }
+
+/* ============ BFF 页 ============ */
+#bff {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 38%, rgba(167, 139, 250, .22) 0%, rgba(167, 139, 250, 0) 70%),
+    linear-gradient(180deg, #2A1650 0%, #1C0F38 48%, #100924 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 90px 20px 70px;
+}
+#sparkles {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.bff-glow {
+  position: absolute;
+  left: 50%; top: 40%;
+  width: 560px; height: 560px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 215, 111, .16) 0%, rgba(233, 160, 208, .10) 38%, rgba(167, 139, 250, 0) 68%);
+  border-radius: 50%;
+  filter: blur(10px);
+  z-index: 0;
+  animation: glowBreath 6s ease-in-out infinite;
+}
+@keyframes glowBreath {
+  0%, 100% { opacity: .7; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+}
+.bff-stars { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.bstar {
+  position: absolute;
+  color: rgba(255, 233, 168, .8);
+  font-size: 16px;
+  animation: btwinkle 4s ease-in-out infinite;
+}
+.bs1 { top: 10%; left: 8%; }
+.bs2 { top: 16%; right: 12%; animation-delay: .8s; }
+.bs3 { top: 30%; left: 18%; animation-delay: 1.4s; font-size: 12px; }
+.bs4 { top: 8%; right: 30%; animation-delay: 2s; }
+.bs5 { top: 62%; left: 6%; animation-delay: .5s; font-size: 12px; }
+.bs6 { top: 70%; right: 8%; animation-delay: 1.1s; }
+.bs7 { top: 80%; left: 26%; animation-delay: 1.8s; font-size: 11px; }
+.bs8 { top: 84%; right: 24%; animation-delay: 2.6s; font-size: 13px; }
+@keyframes btwinkle {
+  0%, 100% { opacity: .2; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.bff-content { position: relative; z-index: 3; max-width: 560px; }
+
+.bff-title {
+  font-size: clamp(26px, 5.6vw, 46px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  line-height: 1.3;
+  color: var(--yellow-deep);
+  filter: drop-shadow(0 14px 40px rgba(167, 139, 250, .35)) drop-shadow(0 2px 0 rgba(28, 15, 56, .6));
+  margin-bottom: 40px;
+}
+@keyframes titleFlow {
+  from { background-position: 0% 0; }
+  to { background-position: 220% 0; }
+}
+.bff-title .ch {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(18px) scale(.9);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .bff-title .ch {
+    color: transparent;
+    background: linear-gradient(100deg, #FFE9A8 0%, #F5B301 22%, #E9A0D0 45%, #A78BFA 68%, #7EB8E8 88%, #FFE9A8 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: titleFlow 7s linear infinite;
+  }
+}
+#bff.enter .ch {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity .55s ease, transform .55s cubic-bezier(.22, 1, .36, 1);
+}
+
+.polaroid {
+  position: relative;
+  display: inline-block;
+  background: #FFFDF6;
+  padding: 14px 14px 46px;
+  border-radius: 4px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .55), 0 4px 16px rgba(0, 0, 0, .3);
+  transform: rotate(-2.5deg);
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), box-shadow .4s ease;
+  cursor: pointer;
+  max-width: min(76vw, 380px);
+}
+.polaroid img {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+}
+.polaroid-tape {
+  position: absolute;
+  top: -16px; left: 50%;
+  width: 96px; height: 30px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(233, 160, 208, .5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+  opacity: .85;
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
+}
+.polaroid-caption {
+  position: absolute;
+  bottom: 14px; left: 0; right: 0;
+  font-family: "Comic Sans MS", "Segoe Script", cursive;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #6B4A9C;
+}
+#bff.enter .polaroid:hover {
+  transform: rotate(-1.5deg) scale(1.03) translateY(-4px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, .6), 0 0 0 5px rgba(255, 143, 180, .28);
+}
+.polaroid.clicked {
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .55), 0 0 0 10px rgba(255, 143, 180, .16), 0 0 70px rgba(255, 143, 180, .55);
+}
+
+.bff-sub {
+  margin-top: 34px;
+  font-size: clamp(13px, 2.4vw, 15px);
+  color: rgba(233, 216, 250, .75);
+  letter-spacing: 2px;
+}
+
+/* BFF 入场动画（由 JS 加 .enter 触发） */
+#bff .polaroid {
+  opacity: 0;
+  transform: translateY(90px) rotate(8deg) scale(.9);
+}
+#bff.enter .polaroid {
+  opacity: 1;
+  transform: translateY(0) rotate(-2.5deg) scale(1);
+  transition: opacity .7s ease, transform 1s cubic-bezier(.22, 1.4, .36, 1);
+}
+#bff .bff-glow { opacity: 0; transition: opacity 1.6s ease .3s; }
+#bff.enter .bff-glow { opacity: 1; }
+#bff .bff-sub { opacity: 0; transform: translateY(14px); transition: opacity .9s ease 1s, transform .9s ease 1s; }
+#bff.enter .bff-sub { opacity: 1; transform: translateY(0); }
+
 /* ============ 页脚 ============ */
 #footer {
   background: #1D0F36;
@@ -531,8 +712,17 @@ img { display: block; }
   .post-images img { border-radius: 8px; }
   .bday-cake { transform: scale(.85); }
   .cover-title { letter-spacing: 2px; }
+  .illu { width: 92px; height: 92px; }
+  .bday-illu { gap: 10px; }
+  #bff { padding: 80px 16px 60px; }
+  .polaroid { max-width: min(82vw, 320px); }
+  .polaroid img { max-width: 290px; }
+  .bff-title { letter-spacing: 2px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flower, .balloon, .cf, .flame, .scroll-hint .arrow, .cover-avatar { animation: none; }
+  .bff-title, .bff-glow, .bstar { animation: none; }
+  #bff .polaroid, #bff .bff-sub, #bff .bff-glow { opacity: 1; transform: none; transition: none; }
+  #bff .ch { opacity: 1; transform: none; transition: none; }
 }

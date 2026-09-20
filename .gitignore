@@ -2,4 +2,7 @@
 _check_*.png
 _segs/
 _segs2/
-_dom.html
+_vsegs/
+_vsegs2/
+_dom*.html
+_verify*.png

@@ -202,4 +202,163 @@
       startParty();
     }
   }
+
+  /* ================= BFF 页 ================= */
+  var bff = document.getElementById("bff");
+  var sc = document.getElementById("sparkles");
+  var polaroid = document.getElementById("polaroid");
+  var glow = bff ? bff.querySelector(".bff-glow") : null;
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* 标题逐字拆分 */
+  var titleEl = document.getElementById("bffTitle");
+  if (titleEl) {
+    var tText = titleEl.textContent;
+    titleEl.textContent = "";
+    tText.split("").forEach(function (ch, i) {
+      var s = el("span", "ch", ch === " " ? "\u00A0" : ch);
+      s.style.transitionDelay = (0.25 + i * 0.045) + "s";
+      titleEl.appendChild(s);
+    });
+  }
+
+  /* 光尘粒子 */
+  var sCtx = null, sparks = [], sRaf = null, sRunning = false;
+  var SPARK_COLORS = ["#FFE9A8", "#F5B301", "#E9A0D0", "#A78BFA", "#7EB8E8"];
+
+  function sResize() {
+    if (!sc) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    sc.width = sc.offsetWidth * dpr;
+    sc.height = sc.offsetHeight * dpr;
+    sCtx = sc.getContext("2d");
+    sCtx.scale(dpr, dpr);
+  }
+
+  function spawnSpark(n) {
+    if (!sc) return;
+    for (var i = 0; i < n; i++) {
+      sparks.push({
+        x: Math.random() * sc.width,
+        y: sc.height + 12 + Math.random() * 40,
+        r: 0.6 + Math.random() * 1.9,
+        vy: -(0.25 + Math.random() * 0.65),
+        vx: (Math.random() - 0.5) * 0.22,
+        life: 1,
+        decay: 0.0016 + Math.random() * 0.0026,
+        color: SPARK_COLORS[Math.floor(Math.random() * SPARK_COLORS.length)],
+        tw: Math.random() * Math.PI * 2
+      });
+    }
+    if (sparks.length > 260) sparks.splice(0, sparks.length - 260);
+  }
+
+  function hearts(x, y, count) {
+    for (var i = 0; i < count; i++) {
+      var a = Math.random() * Math.PI * 2;
+      var sp = 1.2 + Math.random() * 3.4;
+      sparks.push({
+        x: x, y: y, r: 6 + Math.random() * 8,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1.6,
+        life: 1, decay: 0.012 + Math.random() * 0.014,
+        color: "#FF8FB4", heart: true, tw: 0
+      });
+    }
+  }
+
+  function sLoop() {
+    if (!sRunning || !sCtx || !sc) return;
+    sCtx.clearRect(0, 0, sc.width, sc.height);
+    for (var i = sparks.length - 1; i >= 0; i--) {
+      var p = sparks[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vy += p.heart ? 0.05 : 0;
+      p.life -= p.decay;
+      if (p.life <= 0) { sparks.splice(i, 1); continue; }
+      sCtx.globalAlpha = Math.max(Math.min(p.life * 1.4, 0.9), 0);
+      sCtx.fillStyle = p.color;
+      if (p.heart) {
+        sCtx.save();
+        sCtx.translate(p.x, p.y);
+        sCtx.scale(p.r * p.life / 7, p.r * p.life / 7);
+        sCtx.font = "14px sans-serif";
+        sCtx.textAlign = "center"; sCtx.textBaseline = "middle";
+        sCtx.fillText("♥", 0, 0);
+        sCtx.restore();
+      } else {
+        p.tw += 0.06;
+        var rr = p.r * (0.7 + 0.3 * Math.sin(p.tw));
+        sCtx.beginPath();
+        sCtx.arc(p.x, p.y, rr, 0, Math.PI * 2);
+        sCtx.fill();
+      }
+    }
+    sCtx.globalAlpha = 1;
+    sRaf = requestAnimationFrame(sLoop);
+  }
+
+  function startSparkles() {
+    if (sRunning || !sc || reducedMotion) return;
+    sResize();
+    window.addEventListener("resize", sResize);
+    spawnSpark(36);
+    sRunning = true;
+    sRaf = requestAnimationFrame(sLoop);
+  }
+
+  function sparkBurst(e) {
+    if (!sc || !sCtx) return;
+    var r = sc.getBoundingClientRect();
+    hearts(e.clientX - r.left, e.clientY - r.top, 14);
+  }
+
+  /* BFF 入场触发 */
+  if (bff) {
+    if ("IntersectionObserver" in window) {
+      var fobs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            bff.classList.add("enter");
+            startSparkles();
+            fobs.unobserve(bff);
+          }
+        });
+      }, { threshold: 0.25 });
+      fobs.observe(bff);
+    } else {
+      bff.classList.add("enter");
+      startSparkles();
+    }
+  }
+
+  /* 鼠标视差（入场落定后启用） */
+  var parallaxOn = false;
+  if (bff && polaroid && !reducedMotion && window.matchMedia("(hover: hover)").matches) {
+    bff.addEventListener("mousemove", function (e) {
+      if (!parallaxOn) return;
+      var r = bff.getBoundingClientRect();
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      polaroid.style.transform = "translate(" + (dx * 14) + "px," + (dy * 10) + "px) rotate(-2.5deg)";
+      if (glow) glow.style.transform = "translate(calc(-50% + " + (-dx * 30) + "px), calc(-50% + " + (-dy * 20) + "px))";
+    });
+    bff.addEventListener("mouseleave", function () {
+      if (!parallaxOn) return;
+      polaroid.style.transform = "rotate(-2.5deg)";
+      if (glow) glow.style.transform = "";
+    });
+  }
+  if (polaroid) {
+    polaroid.addEventListener("transitionend", function (ev) {
+      if (ev.propertyName === "transform" && bff && bff.classList.contains("enter")) parallaxOn = true;
+    });
+    /* 点击迸发小心心 */
+    polaroid.addEventListener("click", function (e) {
+      if (reducedMotion) return;
+      sparkBurst(e);
+      polaroid.classList.remove("clicked");
+      void polaroid.offsetWidth;
+      polaroid.classList.add("clicked");
+    });
+  }
 })();
